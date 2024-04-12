@@ -1,20 +1,20 @@
-# Sử dụng hình ảnh Linux Alpine để giảm kích thước
-FROM alpine:latest
+# Sử dụng image chính thức của AdGuardHome
+FROM adguard/adguardhome:latest
 
-# Cài đặt AdGuard Home
-RUN wget -O /tmp/AdGuardHome_linux_amd64.tar.gz https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz && \
-    tar -xzf /tmp/AdGuardHome_linux_amd64.tar.gz -C /tmp/ && \
-    mv /tmp/AdGuardHome /opt/ && \
-    rm -rf /tmp/*
+# Thiết lập thư mục làm việc
+WORKDIR /opt/adguardhome
 
-# Di chuyển vào thư mục cài đặt AdGuard Home
-WORKDIR /opt/AdGuardHome
+# Sao chép tệp cấu hình mặc định
+COPY ./data /opt/adguardhome/data
 
-# Sao chép tệp cấu hình mặc định nếu cần
-COPY AdGuardHome.yaml /opt/AdGuardHome/
+# Phơi các cổng cần thiết
+EXPOSE 53/tcp
+EXPOSE 53/udp
+EXPOSE 67/udp
+EXPOSE 68/udp
+EXPOSE 80
+EXPOSE 443
+EXPOSE 3000
 
-# Mở cổng để truy cập vào giao diện web
-EXPOSE 53 53/udp 67/udp 68/udp 80 443
-
-# Chạy AdGuard Home
-CMD ["/opt/AdGuardHome/AdGuardHome", "-c", "/opt/AdGuardHome/AdGuardHome.yaml"]
+# Khởi động AdGuardHome
+CMD ["/opt/adguardhome/AdGuardHome", "-c", "/opt/adguardhome/data/AdGuardHome.yaml"]
